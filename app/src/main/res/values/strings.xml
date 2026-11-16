@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lumino Camera</string>
+    <string name="capture">Capture</string>
+    <string name="switch_camera">Switch camera</string>
+    <string name="permission_required">Camera permission is required</string>
+    <string name="grant_permission">Grant Permission</string>
+</resources>
