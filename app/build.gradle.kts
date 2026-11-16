@@ -52,4 +52,5 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
     implementation("androidx.exifinterface:exifinterface:1.3.7")
+    implementation("androidx.compose.material:material-icons-extended")
 }
