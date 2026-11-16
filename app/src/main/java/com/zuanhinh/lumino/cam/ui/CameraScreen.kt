@@ -64,10 +64,91 @@ fun CameraScreen() {
                     holder.addCallback(object : SurfaceHolder.Callback {
                         override fun surfaceCreated(holder: SurfaceHolder) {
                             currentSurface = holder.surface
-                            controller.openCamera(lens
+                            controller.openCamera(lensFacing, holder.surface) {}
+                        }
+                        override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
+                        override fun surfaceDestroyed(holder: SurfaceHolder) {}
+                    })
+                }
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { offset ->
+                        controller.tapToFocus(offset.x, offset.y)
+                    })
+                }
+                .pointerInput(Unit) {
+                    detectTransformGestures { _, _, gestureZoom, _ ->
+                        zoom = (zoom * gestureZoom).coerceIn(1f, 10f)
+                        controller.setZoom(zoom)
+                    }
+                }
+        )
 
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .padding(top = 24.dp, start = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(onClick = {
+                flashMode = when (flashMode) {
+                    FlashMode.OFF -> FlashMode.ON
+                    FlashMode.ON -> FlashMode.AUTO
+                    FlashMode.AUTO -> FlashMode.OFF
+                }
+            }) {
+                Icon(
+                    imageVector = when (flashMode) {
+                        FlashMode.OFF -> Icons.Filled.FlashOff
+                        FlashMode.ON -> Icons.Filled.FlashOn
+                        FlashMode.AUTO -> Icons.Filled.FlashAuto
+                    },
+                    contentDescription = "Flash",
+                    tint = Color.White
+                )
+            }
+        }
 
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(bottom = 32.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.width(56.dp))
 
+            Box(
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .pointerInput(Unit) {
+                        detectTapGestures(onTap = {
+                            controller.capturePhoto { filename: String ->
+                                Toast.makeText(context, "Saved: ${'$'}filename", Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    }
+            )
 
-
-
+            IconButton(onClick = {
+                lensFacing = if (lensFacing == LensFacing.BACK) LensFacing.FRONT else LensFacing.BACK
+                currentSurface?.let { surface ->
+                    controller.openCamera(lensFacing, surface) {}
+                }
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Cameraswitch,
+                    contentDescription = "Switch camera",
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        }
+    }
+}
